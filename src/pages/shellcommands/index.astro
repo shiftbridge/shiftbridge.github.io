@@ -1,0 +1,152 @@
+---
+// src/pages/shellcommands/index.astro
+import Layout from "../../layouts/Layout.astro";
+
+const name = "ShiftBridge";
+const githubUrl = "https://github.com/ShiftBridge";
+const baseUrl = import.meta.env.BASE_URL;
+
+const projects = [
+  {
+    title: "F**k, Sudo",
+    description:
+      "Forgot to prepend sudo to your last runtime instruction? This utility module sets up a quick alias to capture, wrap, and re-execute failed history instructions natively without mashing the arrow keys.",
+    tags: ["Bash", "Linux"],
+    link: "shellcommands/fs",
+  },
+];
+---
+
+<Layout title={`${name} | Shell Commands`}>
+  {
+    /* Standard global entry keyframe matrix snippet to match terminal layouts */
+  }
+  <style>
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .animate-fade-in-up {
+      animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+  </style>
+
+  <div class="space-y-12 w-full max-w-4xl mx-auto px-4 sm:px-6 md:px-8 py-12">
+    <header class="space-y-4 animate-fade-in-up" style="animation-delay: 0ms;">
+      <a
+        href="/"
+        class="text-xs font-mono text-teal-400 hover:text-teal-300 inline-flex items-center gap-1.5 group transition-colors duration-200"
+      >
+        <span
+          class="transform group-hover:-translate-x-0.5 transition-transform duration-200"
+          >&larr;</span
+        >
+        ~/portfolio/home
+      </a>
+      <div class="space-y-1">
+        <h2
+          class="text-xs font-bold tracking-widest text-slate-500 uppercase font-mono"
+        >
+          System Utilities
+        </h2>
+        <h1
+          class="text-2xl md:text-3xl font-bold tracking-tight text-white font-sans"
+        >
+          Shell Commands
+        </h1>
+      </div>
+    </header>
+
+    <section class="w-full">
+      <div class="grid sm:grid-cols-2 gap-4">
+        {
+          projects.map((project, index) => {
+            const dynamicUrl = project.link.startsWith("/")
+              ? project.link
+              : `${baseUrl}${project.link}`;
+
+            return (
+              <div
+                class="group relative bg-slate-900/40 border border-slate-850 p-6 rounded-xl hover:border-slate-700/60 hover:bg-slate-900/70 hover:-translate-y-0.5 transition-all duration-300 ease-[cubic-bezier(0.25,1,0.5,1)] flex flex-col justify-between min-h-48 shadow-lg animate-fade-in-up"
+                style={`animation-delay: ${(index + 1) * 100}ms;`}
+              >
+                <div>
+                  <div class="flex items-start justify-between gap-4 mb-2">
+                    <h3 class="text-base font-semibold text-white group-hover:text-teal-400 transition-colors duration-200">
+                      <a
+                        href={dynamicUrl}
+                        class="focus:outline-none after:absolute after:inset-0 after:rounded-xl"
+                      >
+                        {project.title}
+                      </a>
+                    </h3>
+
+                    <span class="text-slate-500 group-hover:text-teal-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-200 shrink-0 pt-0.5 pointer-events-none relative z-10">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        class="w-4 h-4"
+                      >
+                        <path d="M7 17L17 7M17 7H7M17 7V17" />
+                      </svg>
+                    </span>
+                  </div>
+
+                  <p class="text-xs md:text-sm text-slate-400 leading-relaxed mb-4">
+                    {project.description}
+                  </p>
+                </div>
+
+                <div class="flex flex-wrap gap-1.5 pt-2 relative z-10 pointer-events-none">
+                  {project.tags.map((tag) => (
+                    <span class="text-[10px] font-mono bg-slate-950/60 text-slate-400 px-2 py-0.5 rounded border border-slate-800/60 uppercase tracking-wider transition-colors duration-200 group-hover:border-slate-700/80">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            );
+          })
+        }
+      </div>
+    </section>
+
+    <footer
+      id="contact"
+      class="border-t border-slate-900 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500 font-mono animate-fade-in-up"
+      style="animation-delay: 250ms;"
+    >
+      <p class="text-slate-500 text-center sm:text-left">
+        LV is cool, but MV is the goal. Built using Astro, Tailwind CSS, and
+        Bun.
+      </p>
+      <div class="flex space-x-6 relative z-20 shrink-0">
+        <a
+          href={githubUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="hover:text-slate-300 transition-colors duration-200"
+        >
+          GitHub
+        </a>
+        <a
+          href="mailto:wait.shiftbridge@gmail.com"
+          class="hover:text-slate-300 transition-colors duration-200"
+        >
+          Email
+        </a>
+      </div>
+    </footer>
+  </div>
+</Layout>
