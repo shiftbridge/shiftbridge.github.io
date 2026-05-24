@@ -1,41 +1,57 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 
-const pageTitle = "Shell Tip: Quick Fix Command Alias";
-const aliasString = "alias fs='sudo $(fc -ln -1)'";
+const pageTitle = "Shell Tip: Interactive Deep Directory Jumper";
+const aliasString =
+  "alias cj='cd $(find . -maxdepth 4 -type d 2>/dev/null | fzf)'";
 
 const zshSnippet =
-  "echo 'alias fs=\"sudo $(fc -ln -1)\"' >> ~/.zshrc && source ~/.zshrc";
+  "echo 'alias cj=\"cd \\\$(find . -maxdepth 4 -type d 2>/dev/null | fzf)\"' >> ~/.zshrc && source ~/.zshrc";
 const bashSnippet =
-  "echo 'alias fs=\"sudo $(fc -ln -1)\"' >> ~/.bashrc && source ~/.bashrc";
+  "echo 'alias cj=\"cd \\\$(find . -maxdepth 4 -type d 2>/dev/null | fzf)\"' >> ~/.bashrc && source ~/.bashrc";
 
 const breakDown = [
   {
-    flag: "fc",
-    role: "Fix Command",
-    desc: "The built-in shell utility used to interact with history logs.",
+    flag: "cd",
+    role: "Change Directory",
+    desc: "The standard shell command to switch your current working directory terminal path.",
   },
   {
-    flag: "-l",
-    role: "List Format",
-    desc: "Forces the command text to list directly to screen instead of booting up an editor.",
+    flag: "find .",
+    role: "Target Locator",
+    desc: "Recursively scans your environment directory tree downward starting from your current path location.",
   },
   {
-    flag: "-n",
-    role: "No Numbers",
-    desc: "Strips line numbers out of the string so it's pure shell input.",
+    flag: "-maxdepth 4",
+    role: "Performance Cap",
+    desc: "Stops the crawl at 4 layers deep to prevent terminal hangs on giant directories like node_modules.",
   },
   {
-    flag: "-1",
-    role: "Target Last",
-    desc: "Locks onto specifically the single, immediate previous line of input executed.",
+    flag: "-type d",
+    role: "Type Filter",
+    desc: "Restricts the output results strictly to directory folders, safely filtering out regular files.",
   },
   {
-    flag: "$( )",
-    role: "Substitution",
-    desc: "Evaluates the inner output text inline, feeding it directly to sudo.",
+    flag: "2>/dev/null",
+    role: "Noise Redirection",
+    desc: "Silently discards unwanted permission or system stream tracking errors from polluting the workspace.",
+  },
+  {
+    flag: "| fzf",
+    role: "Fuzzy UI Pipe",
+    desc: "Streams the paths directly into an interactive fuzzy-matching finder interface for rapid keystroke selection.",
   },
 ];
+
+const distroInstalls = [
+  { name: "Ubuntu / Debian", cmd: "sudo apt update && sudo apt install fzf" },
+  { name: "Fedora / RHEL", cmd: "sudo dnf install fzf" },
+  { name: "Arch Linux", cmd: "sudo pacman -S fzf" },
+  { name: "Alpine Linux", cmd: "apk add fzf" },
+];
+
+const gitFallback =
+  "git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf && ~/.fzf/install";
 ---
 
 <Layout title={pageTitle}>
@@ -73,17 +89,16 @@ const breakDown = [
         <h1
           class="text-3xl md:text-4xl font-bold tracking-tight text-white font-sans"
         >
-          The <span class="text-teal-400 font-mono">fs</span> Command Alias
+          The <span class="text-teal-400 font-mono">cj</span> Command Alias
         </h1>
         <p
           class="text-slate-400 text-sm md:text-base leading-relaxed max-w-3xl"
         >
-          Forgot to type <code
+          Tired of typing deep directory steps like <code
             class="text-teal-300 bg-slate-800/40 px-1.5 py-0.5 rounded font-mono text-xs border border-slate-700/30"
-            >sudo</code
-          >? Don't mash the arrow keys. Add this utility to your shell setup
-          configuration to re-run your immediate last execution with root
-          privileges.
+            >cd ../../../</code
+          >? Run this fuzzy search utility to jump into nested code targets
+          instantly with a couple of adaptive keystrokes.
         </p>
       </div>
     </header>
@@ -102,7 +117,7 @@ const breakDown = [
         </div>
         <span
           class="text-[11px] font-mono text-slate-500 tracking-wider select-none"
-          >alias_config.sh</span
+          >jump_alias.sh</span
         >
         <div class="w-12"></div>
       </div>
@@ -165,7 +180,7 @@ const breakDown = [
         <div
           class="hidden sm:flex items-center gap-4 border-b border-slate-850 bg-slate-900/40 p-4 text-slate-400 font-bold tracking-wider text-[11px] select-none"
         >
-          <div class="w-24 shrink-0">FLAG</div>
+          <div class="w-24 shrink-0">FLAG / UTILITY</div>
           <div class="w-40 shrink-0">ROLE</div>
           <div class="flex-1 font-sans">BEHIND THE SCENES</div>
         </div>
@@ -236,8 +251,8 @@ const breakDown = [
             class="tab-panel space-y-3 w-full transition-all duration-300 opacity-100 transform translate-x-0"
           >
             <p class="text-xs text-slate-400 leading-relaxed">
-              Append directly to your runtime configurations and source your
-              profile environment:
+              Append directly to your shell configurations and evaluate the
+              profile path:
             </p>
             <div class="relative group/snippet">
               <pre
@@ -283,7 +298,7 @@ const breakDown = [
             class="tab-panel space-y-3 w-full absolute top-6 left-6 right-6 hidden opacity-0 transform translate-x-4 transition-all duration-300"
           >
             <p class="text-xs text-slate-400 leading-relaxed">
-              Append to standard bash startup matrices and reload native shell
+              Append directly to bash startup matrix profiles and load system
               parameters:
             </p>
             <div class="relative group/snippet">
@@ -328,26 +343,138 @@ const breakDown = [
       </div>
     </section>
 
-    <footer
-      class="border border-slate-850 bg-slate-900/10 p-6 rounded-xl space-y-2 w-full animate-fade-in-up"
+    <section
+      class="space-y-4 w-full animate-fade-in-up"
       style="animation-delay: 320ms;"
     >
-      <h3
-        class="text-xs font-bold text-slate-400 font-mono uppercase tracking-wider flex items-center gap-2 select-none"
+      <h2
+        class="text-xs font-bold tracking-widest text-slate-500 uppercase font-mono px-1 select-none"
       >
-        <span class="w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse"></span>
-        Live Execution Test
-      </h3>
-      <p class="text-xs text-slate-400 leading-relaxed max-w-3xl">
-        Execute an administrative file reader or directory block without root
-        access (e.g., <code
+        System Core Requirement: Ecosystem Installation Matrix
+      </h2>
+      <p class="text-xs text-slate-400 leading-relaxed max-w-3xl px-1">
+        This utility leverages <code
           class="text-slate-300 font-mono bg-slate-800/40 px-1.5 py-0.5 rounded text-xs border border-slate-700/20"
-          >fdisk -l</code
-        >). Once permissions fail, enter <code
-          class="text-teal-400 font-mono font-bold">fs</code
-        > to auto-compile the instruction array with sudo safety headers instantly.
+          >fzf</code
+        > (fuzzy-finder) to drive the interactive query workspace layer. Ensure it
+        is mapped inside your active system variables using your local package distributor:
       </p>
-    </footer>
+
+      <div class="grid sm:grid-cols-2 gap-4 w-full">
+        {
+          distroInstalls.map((distro) => (
+            <div class="bg-slate-900/10 border border-slate-850 p-4 rounded-xl flex flex-col justify-between gap-3 shadow-sm hover:border-slate-800 transition-all duration-200">
+              <span class="text-xs font-semibold text-slate-300 tracking-wide font-sans">
+                {distro.name}
+              </span>
+              <div class="relative flex items-center justify-between gap-4 font-mono text-xs bg-slate-950/40 p-2.5 rounded-lg border border-slate-900/80 w-full group/distro-box">
+                <span
+                  class="text-teal-400/90 break-all select-all flex-1 truncate pr-2"
+                  title={distro.cmd}
+                >
+                  {distro.cmd}
+                </span>
+                <button
+                  class="snippet-copy-btn p-1.5 rounded bg-slate-900 hover:bg-slate-850 border border-slate-800 text-slate-400 hover:text-teal-400 transition-all duration-200 active:scale-90 cursor-pointer shrink-0"
+                  data-text={distro.cmd}
+                  title={`Copy ${distro.name} command`}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="w-3 h-3 icon-copy"
+                  >
+                    <rect width="8" height="4" x="8" y="2" rx="1" ry="1" />
+                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
+                  </svg>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="w-3 h-3 icon-check hidden text-teal-400"
+                  >
+                    <path d="M20 6 9 17l-5-5" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+
+      <div
+        class="bg-slate-900/10 border border-slate-850 p-5 rounded-xl space-y-3 shadow-sm hover:border-slate-800 transition-all duration-200 w-full"
+      >
+        <div
+          class="flex items-center gap-2 text-xs font-semibold text-slate-300"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="w-4 h-4 text-slate-500"
+          >
+            <path
+              d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"
+            ></path>
+            <path d="M9 18c-4.51 2-5-2-7-2"></path>
+          </svg>
+          Universal Outdated Distribution Fallback (Manual Git Install)
+        </div>
+        <div
+          class="relative flex items-center justify-between gap-4 font-mono text-xs bg-slate-950/40 p-3 rounded-lg border border-slate-900 select-all w-full group/git-box"
+        >
+          <pre
+            class="text-teal-300 overflow-x-auto whitespace-pre-wrap sm:whitespace-nowrap flex-1 pr-6 leading-relaxed">{gitFallback}</pre>
+          <button
+            class="snippet-copy-btn absolute right-3 top-1/2 -translate-y-1/2 p-2 rounded-md bg-slate-900/80 hover:bg-slate-850 border border-slate-800 text-slate-400 hover:text-teal-400 transition-all duration-200 active:scale-90 cursor-pointer shrink-0"
+            data-text={gitFallback}
+            title="Copy universal git installation payload"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="w-3.5 h-3.5 icon-copy"
+            >
+              <rect width="8" height="4" x="8" y="2" rx="1" ry="1"></rect>
+              <path
+                d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"
+              ></path>
+            </svg>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="w-3.5 h-3.5 icon-check hidden text-teal-400"
+            >
+              <path d="M20 6 9 17l-5-5"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </section>
   </div>
 </Layout>
 
@@ -379,7 +506,7 @@ const breakDown = [
     });
   }
 
-  // Multi-Snippet Inline Copy Button Managers
+  // Multi-Snippet Inline Copy Button Managers (Handles tabs and distro grid automatically)
   const snippetButtons = document.querySelectorAll(".snippet-copy-btn");
   snippetButtons.forEach((btn) => {
     btn.addEventListener("click", async () => {
